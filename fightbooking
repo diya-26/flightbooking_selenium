@@ -1,0 +1,69 @@
+import time
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import TimeoutException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import Select
+
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+driver.maximize_window()
+driver.get("https://www.yatra.com")
+
+class DemoAutoSuggestion(): 
+    def demo_auto(self):
+     
+        driver.find_element(By.XPATH,("//a[@title='Round Trip']")).click()
+        depart=driver.find_element(By.XPATH,("//input[@id='BE_flight_origin_city']"))
+        depart.click()
+        time.sleep(3)
+        depart.send_keys("Mumbai")
+        time.sleep(3)
+        depart.send_keys(Keys.ENTER)
+        time.sleep(3)
+        going = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, "//input[@id='BE_flight_arrival_city']")))
+        going.send_keys("New")
+
+        res = WebDriverWait(driver, 5).until(EC.presence_of_all_elements_located((By.XPATH, "//div[@class='viewport']//div[1]/li")))
+        for result in res:
+            if 'New York (LGA)' in result.text:
+                result.click()
+                time.sleep(3)
+                break
+        
+        departure_button=WebDriverWait(driver, 5).until(EC.presence_of_all_elements_located((By.ID,"BE_flight_origin_date")))
+        departure_date = WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located((By.XPATH, "//td[@id='30/08/2023']"))
+        )
+        departure_date.click()
+
+        time.sleep(3)
+
+        # Select the arrival date
+        arrival_date = WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH, "//td[@id='01/09/2023']"))
+        )
+        arrival_date.click()
+
+        time.sleep(3)
+
+        stu=WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH,"//a[normalize-space()='Student Fare']"))
+        )
+        stu.click()
+        time.sleep(3)
+        d=WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH,"//div[@class='ripple-parent search-height demo-icon icon-go']//input[@id='BE_flight_flsearch_btn']"))
+        )
+        d.click()
+        time.sleep(3)
+
+        
+       
+        
+
+dd=DemoAutoSuggestion()
+dd.demo_auto()
